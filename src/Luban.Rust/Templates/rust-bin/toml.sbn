@@ -6,6 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bitflags = { version = "2.5.x" , features = ["serde"] }
+bitflags = { version = "*" , features = ["serde"] }
 macros = { path = "../macros" }
-luban_lib = { path = "../../luban_lib" }
+luban_lib = { path = "../luban_lib" }
+
+[lints.rust]
+warnings = "allow"
+dead_code = "allow"
+unused_variables = "allow"
+unused_imports = "allow"

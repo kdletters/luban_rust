@@ -232,6 +232,14 @@ impl {{bean.name}}{
         paramList = table.index_list |array.each do; ret $0.index_field.name; end
         ret array.join paramList ', '
     end
+
+    func get_key_type
+        if $0 == "String"
+            ret "str";
+        else
+            ret key_type;
+        end
+    end
 }}
 {{~ if table.comment != '' ~}}
 ///{{table.comment | html.escape}}
@@ -278,7 +286,7 @@ impl {{name}} {
         Ok(std::sync::Arc::new({{name}} { data_map, data_list }))
     }
 
-    pub fn get(&self, key: &{{key_type}}) -> Option<{{value_type}}> {
+    pub fn get(&self, key: &{{get_key_type key_type}}) -> Option<{{value_type}}> {
         self.data_map.get(key).map(|x| x.clone())
     }
     
@@ -335,14 +343,14 @@ impl {{name}} {
     }
     {{~if table.is_union_index~}}
     
-    pub fn get(&self, key: &({{array.each table.index_list @index_type_name | array.join ', '}})) -> Option<{{value_type}}> {
+    pub fn get(&self, key: &({{array.each table.index_list @(get_key_type index_type_name) | array.join ', '}})) -> Option<{{value_type}}> {
         self.data_map_union.get(key).map(|x| x.clone())
     }
     {{~else if !table.index_list.empty? ~}}
     {{~for idx in table.index_list
         index = format_property_name __code_style idx.index_field.name
     ~}}
-    pub fn get_by_{{index}}(&self, key: &{{declaring_type_name idx.type}}) -> Option<{{value_type}}> {
+    pub fn get_by_{{index}}(&self, key: &{{get_key_type (declaring_type_name idx.type)}}) -> Option<{{value_type}}> {
         self.data_map_{{index}}.get(key).map(|x| x.clone())
     }
     {{~end~}}

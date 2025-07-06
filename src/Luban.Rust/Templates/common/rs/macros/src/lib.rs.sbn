@@ -1,10 +1,7 @@
-#[macro_use]
 extern crate quote;
-
 use proc_macro::TokenStream;
-use proc_macro2;
-use quote::{format_ident, quote, ToTokens};
-use syn::{parse_macro_input, Data, DeriveInput};
+use quote::{format_ident, quote};
+use syn::{parse_macro_input, DeriveInput};
 
 #[proc_macro_derive(EnumFromNum)]
 pub fn enum_from_num(input: TokenStream) -> TokenStream {

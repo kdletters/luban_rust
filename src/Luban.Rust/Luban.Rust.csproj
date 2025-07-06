@@ -26,6 +26,12 @@
         <None Update="Templates\common\rs\macros\src\lib.rs.sbn">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="Templates\common\rs\luban_lib\Cargo.toml.sbn">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\common\rs\luban_lib\src\lib.rs.sbn">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
         <None Update="Templates\rust-bin\lib.sbn">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>

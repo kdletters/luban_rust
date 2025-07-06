@@ -234,6 +234,14 @@ impl {{bean.name}}{
         paramList = table.index_list |array.each do; ret $0.index_field.name; end
         ret array.join paramList ', '
     end
+
+    func get_key_type
+        if $0 == "String"
+            ret "str";
+        else
+            ret key_type;
+        end
+    end
 }}
 {{~ if table.comment != '' ~}}
 ///{{table.comment | html.escape}}
@@ -245,13 +253,13 @@ pub struct {{table.name}} {
     pub data_map: {{map_type}},
     {{~else if table.is_list_table ~}}
     pub data_list: Vec<{{value_type}}>,
-    {{~if table.is_union_index~}}    
+    {{~if table.is_union_index~}}
     pub data_map_union: {{table_union_map_type_name}},
     {{~else if !table.index_list.empty?~}}
     {{~for idx in table.index_list~}}
     pub data_map_{{idx.index_field.name}}: std::collections::HashMap<{{declaring_type_name idx.type}}, {{value_type}}>,
     {{~end~}}
-    {{~end~}}    
+    {{~end~}}
     {{~else~}}
     pub data: {{declaring_type_name table.value_ttype}},
     {{~end~}}
@@ -276,10 +284,10 @@ impl {{name}} {
         Ok(std::sync::Arc::new({{name}} { data_map, data_list }))
     }
 
-    pub fn get(&self, key: &{{key_type}}) -> Option<{{value_type}}> {
+    pub fn get(&self, key: &{{get_key_type key_type}}) -> Option<{{value_type}}> {
         self.data_map.get(key).map(|x| x.clone())
     }
-    
+
     {{get_ref_resolve}}
 }
 
@@ -316,7 +324,7 @@ impl {{name}} {
         }
     {{~end~}}
 
-    Ok(std::sync::Arc::new({{table.name}} { 
+    Ok(std::sync::Arc::new({{table.name}} {
             data_list,
 {{~if table.is_union_index~}}
             data_map_union,
@@ -328,8 +336,8 @@ impl {{name}} {
         }))
     }
     {{~if table.is_union_index~}}
-    
-    pub fn get(&self, key: &({{array.each table.index_list @index_type_name | array.join ', '}})) -> Option<{{value_type}}> {
+
+    pub fn get(&self, key: &({{array.each table.index_list @(get_key_type index_type_name) | array.join ', '}})) -> Option<{{value_type}}> {
         self.data_map_union.get(key).map(|x| x.clone())
     }
     {{~else if !table.index_list.empty? ~}}

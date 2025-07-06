@@ -1,4 +1,6 @@
-﻿pub mod prelude {
+﻿#![allow(warnings)]
+#![allow(clippy::all)]
+pub mod prelude {
     pub use crate::*;
 {{~ for ns in __ns ~}}
     pub use {{ns}}::*;
