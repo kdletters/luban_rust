@@ -25,6 +25,7 @@ public class BeanSchemaFromExcelHeaderLoader : IBeanSchemaLoader
             Parent = "",
             Groups = new(),
             Fields = new(),
+            Tags = new Dictionary<string, string>(),
         };
 
 
@@ -34,7 +35,7 @@ public class BeanSchemaFromExcelHeaderLoader : IBeanSchemaLoader
         {
             if (Directory.Exists(fileName))
             {
-                var files = FileUtil.GetFileOrDirectory(fileName);
+                var files = FileUtil.GetFileOrDirectory(Directory.GetParent(fileName).FullName, fileName);
                 var firstExcelFile = files.FirstOrDefault(f => FileUtil.IsExcelFile(f));
                 if (firstExcelFile == null)
                 {
@@ -81,6 +82,7 @@ public class BeanSchemaFromExcelHeaderLoader : IBeanSchemaLoader
                 Name = name,
                 Groups = new List<string>(),
                 Variants = new List<string>(),
+                Tags = new Dictionary<string, string>(),
             };
 
             string[] attrs = f.Type.Trim().Split('&').Select(s => s.Trim()).ToArray();

@@ -60,7 +60,7 @@ public class SimpleJsonDeserializeVisitor : ITypeFuncVisitor<string, string, int
 
     public string Accept(TBean type, string json, string x, int depth)
     {
-        string src = $"{type.DefBean.FullName}.Deserialize{type.DefBean.Name}({json})";
+        string src = $"{CSharpUtil.GetFullNameWithGlobalQualifier(type.DefBean)}.Deserialize{type.DefBean.Name}({json})";
         string constructor = type.DefBean.TypeConstructorWithTypeMapper();
         return $"{{ if(!{json}.IsObject) {{ throw new SerializationException(); }}  {x} = {(string.IsNullOrEmpty(constructor) ? src : $"{constructor}({src})")};  }}";
     }
@@ -76,10 +76,6 @@ public class SimpleJsonDeserializeVisitor : ITypeFuncVisitor<string, string, int
         string typeStr = $"{type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)}[{_n}]";
         if (type.Dimension > 1)
         {
-            if (type.FinalElementType == null)
-            {
-                throw new System.Exception("��ά����û��Ԫ������");
-            }
             typeStr = $"{type.FinalElementType.Apply(UnderlyingDeclaringTypeNameVisitor.Ins)}[{_n}]";
             for (int i = 0; i < type.Dimension - 1; i++)
             {

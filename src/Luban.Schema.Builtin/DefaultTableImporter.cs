@@ -29,7 +29,7 @@ public class DefaultTableImporter : ITableImporter
         var tables = new List<RawTable>();
         foreach (string file in Directory.GetFiles(dataDir, "*", SearchOption.AllDirectories))
         {
-            if (FileUtil.IsIgnoreFile(file))
+            if (FileUtil.IsIgnoreFile(dataDir, file))
             {
                 continue;
             }
@@ -68,6 +68,7 @@ public class DefaultTableImporter : ITableImporter
                 Groups = new List<string> { },
                 InputFiles = new List<string> { relativePath },
                 OutputFile = "",
+                Tags = new Dictionary<string, string>(),
             };
             s_logger.Debug("import table file:{@}", table);
             tables.Add(table);

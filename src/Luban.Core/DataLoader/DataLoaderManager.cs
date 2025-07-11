@@ -33,7 +33,7 @@ public class DataLoaderManager
             s_logger.Trace("load table:{} file:{}", table.FullName, inputFile);
             var (actualFile, subAssetName) = FileUtil.SplitFileAndSheetName(FileUtil.Standardize(inputFile));
             var options = new Dictionary<string, string>();
-            foreach (var atomFile in FileUtil.GetFileOrDirectory(Path.Combine(inputDataDir, actualFile)))
+            foreach (var atomFile in FileUtil.GetFileOrDirectory(inputDataDir, Path.Combine(inputDataDir, actualFile)))
             {
                 s_logger.Trace("load table:{} atomfile:{}", table.FullName, atomFile);
                 tasks.Add(Task.Run(() => LoadTableFile(table, atomFile, subAssetName, options)));
@@ -57,7 +57,7 @@ public class DataLoaderManager
             {
                 throw new Exception($"'{table.FullName}'的input文件或目录不存在: {file} ");
             }
-            string loaderName = options.TryGetValue("loader", out var name) ? name : FileUtil.GetExtensionWithDot(file);
+            string loaderName = options.TryGetValue("loader", out var name) ? name : FileUtil.GetExtensionWithoutDot(file);
             var loader = CreateDataLoader(loaderName);
             using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             loader.Load(file, subAssetName, stream);
@@ -85,7 +85,7 @@ public class DataLoaderManager
     {
         try
         {
-            string loaderName = options.TryGetValue("loader", out var name) ? name : FileUtil.GetExtensionWithDot(file);
+            string loaderName = options.TryGetValue("loader", out var name) ? name : FileUtil.GetExtensionWithoutDot(file);
             var loader = CreateDataLoader(loaderName);
             using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             loader.Load(file, subAssetName, stream);
