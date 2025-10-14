@@ -1,9 +1,9 @@
 ﻿#![allow(warnings)]
 #![allow(clippy::all)]
 pub mod prelude {
-    pub use crate::*;
+    pub use super::*;
 {{~ for ns in __ns ~}}
-    pub use {{ns}}::*;
+    pub use super::{{ns}}::*;
 {{~end~}}
 }
 

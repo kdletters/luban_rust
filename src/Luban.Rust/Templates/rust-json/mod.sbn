@@ -83,7 +83,7 @@ bitflags::bitflags! {
     }
 }
 {{~else~}}
-#[derive(Deserialize, Debug, Hash, Eq, PartialEq, macros::EnumFromNum)]
+#[derive(Deserialize, Debug, Hash, Eq, PartialEq, luban_macros::EnumFromNum)]
 pub enum {{enum.name}} {
     {{~ for item in enum.items ~}}
 {{~if item.comment_or_alias != '' ~}}

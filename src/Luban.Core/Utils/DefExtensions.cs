@@ -36,6 +36,11 @@ public static class DefExtensions
     }
 
 
+    public static bool HasTypeMapper(this DefTypeBase type)
+    {
+        return type.TypeMappers != null;
+    }
+
     public static string TypeNameWithTypeMapper(this DefTypeBase type)
     {
         if (type.TypeMappers != null)

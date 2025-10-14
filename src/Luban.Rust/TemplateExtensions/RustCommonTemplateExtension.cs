@@ -20,14 +20,14 @@ public class RustCommonTemplateExtension : ScriptObject
 
     public static string FullName(DefTypeBase type)
     {
-        return $"crate::{type.FullName.Replace(".", "::")}";
+        return $"{type.FullName.Replace(".", "::")}";
     }
 
     public static string BaseTraitName(DefBean bean)
     {
         if (!bean.IsAbstractType) return string.Empty;
         
-        var name = $"crate::{bean.FullName.Replace(".", "::")}";
+        var name = $"{bean.FullName.Replace(".", "::")}";
         return name.Insert(name.Length - bean.Name.Length, "T");
     }
 

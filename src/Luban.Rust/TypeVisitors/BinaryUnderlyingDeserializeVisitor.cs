@@ -49,8 +49,8 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
     public string Accept(TEnum type, string bufName, string fieldName, int depth)
     {
         return type.DefEnum.IsFlags
-            ? $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::from_bits_truncate({bufName}.read_uint())"
-            : $"{bufName}.read_int().into()";
+                   ? $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::from_bits_truncate({bufName}.read_uint())"
+                   : $"{bufName}.read_int().into()";
     }
 
     public string Accept(TString type, string bufName, string fieldName, int depth)
@@ -65,9 +65,12 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
 
     public string Accept(TBean type, string bufName, string fieldName, int depth)
     {
-        return type.DefBean.IsAbstractType
-            ? $"{RustCommonTemplateExtension.FullName(type.DefBean)}::new(&mut {bufName})?"
-            : $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::new(&mut {bufName})?";
+        var src = type.DefBean.IsAbstractType
+                      ? $"{RustCommonTemplateExtension.FullName(type.DefBean)}::new(&mut {bufName})?"
+                      : type.DefBean.HasTypeMapper()
+                          ? $"{type.DefBean.FullName.Replace(".", "::")}::new(&mut {bufName})?"
+                          : $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::new(&mut {bufName})?";
+        return type.DefBean.HasTypeMapper() ? src + ".into()" : src;
     }
 
     public string Accept(TArray type, string bufName, string fieldName, int depth)

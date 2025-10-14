@@ -1,6 +1,7 @@
 ﻿using Luban.Rust.TemplateExtensions;
 using Luban.Types;
 using Luban.TypeVisitors;
+using Luban.Utils;
 
 namespace Luban.Rust.TypeVisitors;
 
@@ -62,9 +63,12 @@ public class RustJsonUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, str
 
     public string Accept(TBean type, string json, string field, int depth)
     {
-        return type.DefBean.IsAbstractType
-            ? $"{RustCommonTemplateExtension.FullName(type.DefBean)}::new(&{json})?"
-            : $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::new(&{json})?";
+        var src = type.DefBean.IsAbstractType
+                      ? $"{RustCommonTemplateExtension.FullName(type.DefBean)}::new(&{json})?"
+                      : type.DefBean.HasTypeMapper()
+                          ? $"{type.DefBean.FullName.Replace(".", "::")}::new(&{json})?"
+                          : $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::new(&{json})?";
+        return type.DefBean.HasTypeMapper() ? src + ".into()" : src;
     }
 
     public string Accept(TArray type, string json, string field, int depth)

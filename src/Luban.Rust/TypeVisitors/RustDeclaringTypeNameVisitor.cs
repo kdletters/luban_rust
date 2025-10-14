@@ -45,7 +45,7 @@ public class RustDeclaringTypeNameVisitor : ITypeFuncVisitor<string>
 
     public string Accept(TEnum type)
     {
-        return $"crate::{(type.DefEnum.TypeNameWithTypeMapper() ?? type.DefEnum.FullName).Replace(".", "::")}";
+        return type.DefEnum.TypeNameWithTypeMapper() ?? type.DefEnum.FullName.Replace(".", "::");
     }
 
     public string Accept(TString type)
@@ -60,7 +60,7 @@ public class RustDeclaringTypeNameVisitor : ITypeFuncVisitor<string>
 
     public string Accept(TBean type)
     {
-        return $"crate::{(type.DefBean.TypeNameWithTypeMapper() ?? type.DefBean.FullName).Replace(".", "::")}";
+        return type.DefBean.TypeNameWithTypeMapper() ?? type.DefBean.FullName.Replace(".", "::");
     }
 
     public string Accept(TArray type)

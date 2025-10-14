@@ -71,25 +71,23 @@ public class RustCodeTargetBase : TemplateCodeTargetBase
         {
             Task.Run(() =>
             {
-                var allns = modDic.Values.Select(x => "crate::" + x.FullPath.Replace("/", "::")).ToList();
+                var allns = modDic.Values.Select(x => x.FullPath.Replace("/", "::")).ToList();
                 var allmods = modDic.Keys.Select(x => x.Replace(".", "::"));
-                return CreateOutputFile($"{GenerationContext.Current.TopModule}/src/lib.rs", GenerateLib(ctx, allmods, allns, topMod, polymorphicBeans));
+                return CreateOutputFile($"{GenerationContext.Current.TopModule}/mod.rs", GenerateLib(ctx, allmods, allns, topMod, polymorphicBeans));
             }),
-            Task.Run(() => CreateOutputFile($"{GenerationContext.Current.TopModule}/Cargo.toml", GenerateToml(ctx))),
         };
 
         foreach (var mod in modDic.Values)
         {
             tasks.Add(Task.Run(() =>
             {
-                var path = $"{GenerationContext.Current.TopModule}/src/{mod.FullPath}";
+                var path = $"{GenerationContext.Current.TopModule}/{mod.FullPath}";
                 path += mod.SubMods.Count <= 0 ? ".rs" : "/mod.rs";
 
                 return CreateOutputFile(path, GenerateMod(ctx, mod));
             }));
         }
 
-        GenerateMacros(ctx, manifest);
         Task.WaitAll(tasks.ToArray());
         foreach (var task in tasks)
         {
@@ -139,20 +137,6 @@ public class RustCodeTargetBase : TemplateCodeTargetBase
         }
     }
 
-    protected virtual string GenerateToml(GenerationContext ctx)
-    {
-        var writer = new CodeWriter();
-        var template = GetTemplate($"toml");
-        var tplCtx = CreateTemplateContext(template);
-        var extraEnvs = new ScriptObject
-        {
-            {"__name", GenerationContext.Current.TopModule},
-        };
-        tplCtx.PushGlobal(extraEnvs);
-        writer.Write(template.Render(tplCtx));
-        return writer.ToResult(string.Empty);
-    }
-
     protected virtual string GenerateLib(GenerationContext ctx, IEnumerable<string> mods, IEnumerable<string> ns, Mod topMod, HashSet<DefBean> polymorphicBeans)
     {
         var writer = new CodeWriter();
@@ -199,16 +183,6 @@ public class RustCodeTargetBase : TemplateCodeTargetBase
         writer.Write(template.Render(tplCtx));
         var result = writer.ToResult(addHeader ? FileHeader : null);
         return result;
-    }
-
-    protected virtual void GenerateMacros(GenerationContext ctx, OutputFileManifest manifest)
-    {
-        var template = TemplateManager.Ins.GetTemplateString($"{CommonTemplateSearchPath}/macros/Cargo.toml");
-        var path = $"macros/Cargo.toml";
-        manifest.AddFile(CreateOutputFile(path, template));
-        template = TemplateManager.Ins.GetTemplateString($"{CommonTemplateSearchPath}/macros/src/lib.rs");
-        path = $"macros/src/lib.rs";
-        manifest.AddFile(CreateOutputFile(path, template));
     }
 
     protected class Mod
