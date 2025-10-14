@@ -46,9 +46,10 @@ public class RustJsonUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, str
 
     public string Accept(TEnum type, string json, string field, int depth)
     {
-        return type.DefEnum.IsFlags
+        var src = type.DefEnum.IsFlags
             ? $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::from_bits_truncate(<u32 as std::str::FromStr>::from_str(&{json}.to_string()).unwrap())"
-            : $"{json}.as_i64().unwrap().into()";
+            : $"Into::<{RustCommonTemplateExtension.FullName(type.DefEnum)}>::into({json}.as_i64().unwrap())";
+        return type.DefEnum.HasTypeMapper() ? src + ".into()" : src;
     }
 
     public string Accept(TString type, string json, string field, int depth)

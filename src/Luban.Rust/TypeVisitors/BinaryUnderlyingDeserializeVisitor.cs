@@ -48,9 +48,10 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
 
     public string Accept(TEnum type, string bufName, string fieldName, int depth)
     {
-        return type.DefEnum.IsFlags
-                   ? $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::from_bits_truncate({bufName}.read_uint())"
-                   : $"{bufName}.read_int().into()";
+        var src = type.DefEnum.IsFlags
+                      ? $"{type.Apply(RustDeclaringTypeNameVisitor.Ins)}::from_bits_truncate({bufName}.read_uint())"
+                      : $"Into::<{RustCommonTemplateExtension.FullName(type.DefEnum)}>::into({bufName}.read_int())";
+       return type.DefEnum.HasTypeMapper() ? src + ".into()" : src;
     }
 
     public string Accept(TString type, string bufName, string fieldName, int depth)
