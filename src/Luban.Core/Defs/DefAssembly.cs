@@ -14,6 +14,8 @@ public class DefAssembly
 
     private readonly Dictionary<string, DefTypeBase> _notCaseSenseTypes = new();
 
+    private readonly Dictionary<string, string> _constAliases = new();
+
     private readonly HashSet<string> _namespaces = new();
 
     private readonly Dictionary<string, DefTypeBase> _notCaseSenseNamespaces = new();
@@ -59,6 +61,11 @@ public class DefAssembly
         return _variants.TryGetValue("default", out variantName);
     }
 
+    public bool TryGetConstAlias(string alias, out string value)
+    {
+        return _constAliases.TryGetValue(alias, out value);
+    }
+
     public DefAssembly(RawAssembly assembly, string target, List<string> outputTables, List<RawGroup> groupDefs, Dictionary<string, string> variants)
     {
         _targets = assembly.Targets;
@@ -67,7 +74,19 @@ public class DefAssembly
         {
             throw new Exception($"target:{target} is invalid");
         }
+        foreach (var g in Target.Groups)
+        {
+            if (groupDefs.All(d => !d.Names.Contains(g)))
+            {
+                throw new Exception($"target:{target} group:`{g}` not defined");
+            }
+        }
         _variants = variants;
+
+        foreach (var c in assembly.ConstAliases)
+        {
+            _constAliases.Add(c.Key, c.Value);
+        }
 
         foreach (var g in assembly.RefGroups)
         {
