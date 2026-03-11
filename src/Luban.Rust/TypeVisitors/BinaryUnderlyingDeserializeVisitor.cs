@@ -23,6 +23,7 @@ using Luban.Rust.TemplateExtensions;
 using Luban.Rust.TypeVisitors;
 using Luban.Types;
 using Luban.TypeVisitors;
+using Luban.Utils;
 
 namespace Luban.CSharp.TypeVisitors;
 
